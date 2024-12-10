@@ -1,0 +1,10 @@
+[package]
+name = "asg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.23", features = ["derive"] }
+dotenv = "0.15.0"
+sqlx = { version = "0.8.2", features = ["postgres", "runtime-tokio-native-tls"] }
+tokio = { version = "1.42.0", features = ["full"] }
