@@ -1,4 +1,3 @@
--- sqlx-up
 CREATE TABLE IF NOT EXISTS contacts (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR,
@@ -18,7 +17,6 @@ CREATE TABLE IF NOT EXISTS contacts (
     )
 );
 
--- Create a trigger function to update `updated_at`
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -27,11 +25,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Attach the trigger to the `contacts` table
 CREATE TRIGGER update_updated_at
 BEFORE UPDATE on contacts
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
-
--- sqlx-down
-DROP TABLE IF EXISTS contacts;

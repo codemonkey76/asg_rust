@@ -1,4 +1,3 @@
--- sqlx-up
 CREATE TABLE IF NOT EXISTS customers (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
@@ -21,9 +20,3 @@ CREATE TRIGGER update_updated_at
 BEFORE UPDATE ON customers
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
-
--- sqlx-down
--- Remove the trigger from the `customers` table
-DROP TRIGGER IF EXISTS update_updated_at ON customers;
-
-DROP TABLE IF EXISTS customers;

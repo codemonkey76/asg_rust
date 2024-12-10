@@ -1,4 +1,3 @@
--- sqlx-up
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
@@ -12,6 +11,3 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP,
     CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE SET NULL
 );
-
--- sqlx-down
-DROP TABLE IF EXISTS users;
