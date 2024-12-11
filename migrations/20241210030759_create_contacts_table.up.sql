@@ -17,14 +17,6 @@ CREATE TABLE IF NOT EXISTS contacts (
     )
 );
 
-CREATE OR REPLACE FUNCTION set_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE TRIGGER update_updated_at
 BEFORE UPDATE on contacts
 FOR EACH ROW
