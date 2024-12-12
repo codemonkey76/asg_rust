@@ -1,4 +1,8 @@
-use crate::{error::AppResult, security::hash_password};
+use crate::{
+    error::{AppError, AppResult},
+    security::hash_password,
+};
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use chrono::NaiveDateTime;
 use sqlx::PgPool;
 
@@ -39,5 +43,34 @@ impl User {
         .execute(pool)
         .await?;
         Ok(())
+    }
+    pub async fn get_password_hash(pool: &PgPool, email: &str) -> AppResult<String> {
+        let result = sqlx::query!("SELECT password FROM users WHERE email = $1", email)
+            .fetch_one(pool)
+            .await;
+
+        match result {
+            Ok(record) => Ok(record.password),
+            Err(_) => Err(AppError::UserNotFound(email.to_string())),
+        }
+    }
+    pub async fn verify_user_password(
+        provided_password: &str,
+        password_hash: &str,
+    ) -> AppResult<()> {
+        let argon2 = Argon2::default();
+        match PasswordHash::new(password_hash) {
+            Ok(parsed_hash) => {
+                if argon2
+                    .verify_password(provided_password.as_bytes(), &parsed_hash)
+                    .is_ok()
+                {
+                    Ok(())
+                } else {
+                    Err(AppError::InvalidCredentials)
+                }
+            }
+            Err(_) => Err(AppError::InvalidPasswordHash),
+        }
     }
 }
