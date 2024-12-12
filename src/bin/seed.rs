@@ -1,9 +1,6 @@
-use std::{env, fmt};
+use std::env;
 
-use asg::{
-    error::AppResult,
-    model::{self, users::User},
-};
+use asg::{error::AppResult, model::users::User};
 use clap::{Parser, Subcommand};
 use sqlx::{Pool, Postgres};
 
