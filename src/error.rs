@@ -11,6 +11,7 @@ pub enum AppError {
     UserNotFound(String),
     Base64DecodeError(base64::DecodeError),
     InvalidCredentials,
+    Unauthorized,
     InvalidPasswordHash,
 }
 
@@ -25,6 +26,7 @@ impl fmt::Display for AppError {
             AppError::Base64DecodeError(err) => write!(f, "Base64 decode error: {}", err),
             AppError::InvalidCredentials => write!(f, "Invalid credentials"),
             AppError::InvalidPasswordHash => write!(f, "Invalid password hash"),
+            AppError::Unauthorized => write!(f, "Unauthorized"),
         }
     }
 }

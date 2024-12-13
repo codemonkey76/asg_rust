@@ -2,20 +2,21 @@ use crate::{
     error::{AppError, AppResult},
     security::hash_password,
 };
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
-use chrono::NaiveDateTime;
-use sqlx::PgPool;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
+use sqlx::{FromRow, PgPool};
 
-#[derive(Debug)]
+#[derive(Serialize, Debug, FromRow)]
 pub struct User {
     pub id: i32,
     pub name: String,
     pub email: String,
-    pub email_verified_at: Option<NaiveDateTime>,
+    pub email_verified_at: Option<DateTime<Utc>>,
+    #[serde(skip_serializing)]
     pub password: String,
     pub customer_id: Option<i32>,
-    pub updated_at: Option<NaiveDateTime>,
-    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<DateTime<Utc>>,
     pub remember_token: Option<String>,
 }
 impl User {
@@ -44,33 +45,14 @@ impl User {
         .await?;
         Ok(())
     }
-    pub async fn get_password_hash(pool: &PgPool, email: &str) -> AppResult<String> {
-        let result = sqlx::query!("SELECT password FROM users WHERE email = $1", email)
+    pub async fn get_password_hash(pool: &PgPool, email: &str) -> AppResult<(i32, String)> {
+        let result = sqlx::query!("SELECT id, password FROM users WHERE email = $1", email)
             .fetch_one(pool)
             .await;
 
         match result {
-            Ok(record) => Ok(record.password),
+            Ok(record) => Ok((record.id, record.password)),
             Err(_) => Err(AppError::UserNotFound(email.to_string())),
-        }
-    }
-    pub async fn verify_user_password(
-        provided_password: &str,
-        password_hash: &str,
-    ) -> AppResult<()> {
-        let argon2 = Argon2::default();
-        match PasswordHash::new(password_hash) {
-            Ok(parsed_hash) => {
-                if argon2
-                    .verify_password(provided_password.as_bytes(), &parsed_hash)
-                    .is_ok()
-                {
-                    Ok(())
-                } else {
-                    Err(AppError::InvalidCredentials)
-                }
-            }
-            Err(_) => Err(AppError::InvalidPasswordHash),
         }
     }
 }

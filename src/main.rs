@@ -1,11 +1,14 @@
-use asg::{app_state, setup};
+use asg::setup;
+use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
 
+    // Build our application with a route
     let app = setup::initialize_app().await;
-
-    let app_key = app_state::config::get_app_key();
-    println!("Hello, world!");
+    let addr = "0.0.0.0:3000";
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
+    println!("Server running at http://{}", &addr);
+    axum::serve(listener, app).await.unwrap();
 }

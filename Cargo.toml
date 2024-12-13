@@ -6,13 +6,18 @@ edition = "2021"
 [dependencies]
 argon2 = "0.5.3"
 axum = "0.7.9"
+axum-client-ip = "0.6.1"
 base64 = "0.22.1"
-chrono = "0.4.39"
+chrono = { version = "0.4.39", features = ["serde"] }
 clap = { version = "4.5.23", features = ["derive"] }
 dotenv = "0.15.0"
 filelock-rs = "0.1.0-beta.2"
 jsonwebtoken = "9.3.0"
 rand = "0.8.5"
 serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.133"
 sqlx = { version = "0.8.2", features = ["postgres", "runtime-tokio-native-tls", "chrono"] }
 tokio = { version = "1.42.0", features = ["full"] }
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
