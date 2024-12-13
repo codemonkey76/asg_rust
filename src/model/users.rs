@@ -19,6 +19,7 @@ pub struct User {
     pub created_at: Option<DateTime<Utc>>,
     pub remember_token: Option<String>,
 }
+#[cfg(not(feature = "deploy"))]
 impl User {
     pub async fn create(pool: &PgPool, name: &str, email: &str, password: &str) -> AppResult<Self> {
         let hashed_password = hash_password(password)?;

@@ -3,6 +3,10 @@ name = "asg"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+deploy = []
+
 [dependencies]
 argon2 = "0.5.3"
 axum = "0.7.9"

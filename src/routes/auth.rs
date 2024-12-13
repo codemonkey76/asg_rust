@@ -43,6 +43,7 @@ fn error_response(status: StatusCode, message: &str) -> (StatusCode, Json<LoginR
     (status, Json(LoginResponse::error(message)))
 }
 
+#[cfg(not(feature = "deploy"))]
 pub async fn login(
     State(state): State<SharedAppState>,
     Json(payload): Json<LoginRequest>,

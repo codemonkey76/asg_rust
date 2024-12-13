@@ -12,6 +12,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::prelude::*;
 use tracing_subscriber::{fmt, EnvFilter};
 
+#[cfg(not(feature = "deploy"))]
 pub async fn initialize_app() -> Router {
     init_logging();
     // Decode APP_KEY
