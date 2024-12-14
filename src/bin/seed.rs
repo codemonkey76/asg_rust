@@ -1,6 +1,14 @@
 use std::env;
 
-use asg::{error::AppResult, model::users::User};
+use asg::{
+    app_state::config::get_app_key,
+    auth::security::hash_password,
+    error::AppResult,
+    model::{
+        repository::ModelRepository,
+        users::{User, UserForCreate},
+    },
+};
 use clap::{Parser, Subcommand};
 use sqlx::{Pool, Postgres};
 
@@ -10,16 +18,17 @@ async fn main() -> AppResult<()> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = Pool::<Postgres>::connect(&database_url).await?;
+    let app_key = get_app_key().expect("APP_KEY not set");
 
     let cli = Cli::parse();
 
     match &cli.command {
         Some(Commands::All) => {
-            seed_users(&pool).await?;
-            seed_customers(&pool).await?;
+            seed_users(&pool, &app_key).await?;
+            seed_customers(&pool, &app_key).await?;
         }
         Some(Commands::Users) => {
-            seed_users(&pool).await?;
+            seed_users(&pool, &app_key).await?;
         }
         Some(Commands::Customers) => {}
         None => println!("No seeding command provided. Use --help for options."),
@@ -43,14 +52,23 @@ enum Commands {
     Customers,
 }
 
-async fn seed_users(pool: &Pool<Postgres>) -> AppResult<()> {
+async fn seed_users(pool: &Pool<Postgres>, app_key: &[u8]) -> AppResult<()> {
     let users = vec![
-        ("Alice", "alice@example.com", "secret123"),
-        ("Bob", "bob@example.com", "secret456"),
+        UserForCreate {
+            name: "Alice".to_string(),
+            email: "alice@example.com".to_string(),
+            hashed_password: hash_password("secret123", app_key)?,
+        },
+        UserForCreate {
+            name: "Bob".to_string(),
+            email: "bob@example.com".to_string(),
+            hashed_password: hash_password("secret456", app_key)?,
+        },
     ];
 
-    for (name, email, password) in users {
-        match User::create(pool, name, email, password).await {
+    for user in users {
+        let email = user.email.clone();
+        match User::create(pool, user).await {
             Ok(user) => {
                 if let Err(err) = User::set_email_verified_at(pool, user.id).await {
                     eprintln!("Error setting email verified for user {}: {}", user.id, err);
@@ -65,6 +83,6 @@ async fn seed_users(pool: &Pool<Postgres>) -> AppResult<()> {
     Ok(())
 }
 
-async fn seed_customers(_pool: &Pool<Postgres>) -> AppResult<()> {
+async fn seed_customers(_pool: &Pool<Postgres>, _app_key: &[u8]) -> AppResult<()> {
     Ok(())
 }

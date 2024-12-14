@@ -5,7 +5,7 @@ use crate::error::{AppError, AppResult};
 
 use super::{List, ListOptions, Paginator};
 
-type PgQuery<'q, T> = sqlx::query::QueryAs<'q, sqlx::Postgres, T, sqlx::postgres::PgArguments>;
+pub type PgQuery<'q, T> = sqlx::query::QueryAs<'q, sqlx::Postgres, T, sqlx::postgres::PgArguments>;
 
 #[async_trait]
 pub trait ModelRepository: Sized + for<'r> FromRow<'r, PgRow> + Unpin {
@@ -13,9 +13,9 @@ pub trait ModelRepository: Sized + for<'r> FromRow<'r, PgRow> + Unpin {
     type UpdateModel: Send + Sync;
 
     const TABLE_NAME: &'static str;
-    const CREATE_FIELDS: Vec<&'static str>;
-    const UPDATE_FIELDS: Vec<&'static str>;
-    const SEARCH_COLUMNS: Vec<&'static str>;
+    const CREATE_FIELDS: &'static [&'static str];
+    const UPDATE_FIELDS: &'static [&'static str];
+    const SEARCH_COLUMNS: &'static [&'static str];
 
     fn create_placeholders() -> String {
         (1..=Self::CREATE_FIELDS.len())

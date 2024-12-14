@@ -5,5 +5,4 @@ pub mod error;
 pub mod middleware;
 pub mod model;
 pub mod routes;
-pub mod security;
 pub mod setup;
