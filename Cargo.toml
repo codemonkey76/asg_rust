@@ -10,7 +10,8 @@ deploy = []
 [dependencies]
 argon2 = "0.5.3"
 axum = "0.7.9"
-axum-client-ip = "0.6.1"
+axum-macros = "0.4.2"
+axum-valid = { version = "0.21.0", features = ["422", "full_validator", "into_json"] }
 base64 = "0.22.1"
 chrono = { version = "0.4.39", features = ["serde"] }
 clap = { version = "4.5.23", features = ["derive"] }
@@ -25,3 +26,4 @@ tokio = { version = "1.42.0", features = ["full"] }
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+validator = { version = "0.19.0", features = ["derive"] }

@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS customers (
     terms INT NOT NULL DEFAULT 15, -- Terms in days
     credit_limit INT,
     active BOOLEAN NOT NULL DEFAULT FALSE,
-    archived_at TIMESTAMP,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    archived_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Attach the global trigger function to the `customers` table

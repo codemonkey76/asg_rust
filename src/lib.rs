@@ -6,3 +6,4 @@ pub mod middleware;
 pub mod model;
 pub mod routes;
 pub mod setup;
+pub mod validators;

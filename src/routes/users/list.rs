@@ -1,13 +1,9 @@
+use crate::app_state::SharedAppState;
+use crate::model::{repository::ModelRepository, users::User, List, ListOptions, Paginator};
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Query, State},
     response::IntoResponse,
     Json,
-};
-use serde::Serialize;
-
-use crate::{
-    app_state::SharedAppState,
-    model::{repository::ModelRepository, users::User, List, ListOptions, Paginator},
 };
 
 pub async fn list(
@@ -25,18 +21,5 @@ pub async fn list(
                 total_count: 0,
             },
         }),
-    }
-}
-
-#[derive(Serialize)]
-pub enum GetUserResponse {
-    User(User),
-    Error,
-}
-
-pub async fn get(State(state): State<SharedAppState>, Path(id): Path<i32>) -> impl IntoResponse {
-    match User::get(&state.db_pool, id).await {
-        Ok(data) => Json(GetUserResponse::User(data)),
-        Err(_) => Json(GetUserResponse::Error),
     }
 }

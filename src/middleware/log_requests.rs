@@ -4,7 +4,6 @@ use axum::{
     middleware::Next,
     response::Response,
 };
-use axum_client_ip::InsecureClientIp;
 use std::time::Instant;
 use tracing::{debug, info};
 
@@ -18,9 +17,6 @@ pub async fn log_requests(req: Request<Body>, next: Next) -> Response {
     // Extract and clone the request body for logging
     let (parts, body) = req.into_parts();
     let parts_clone = parts.clone();
-    let ip = parts.extensions.get::<InsecureClientIp>();
-    eprintln!("IP: {:?}", ip);
-    let client_ip = ip.map(|ip| ip.0);
     let user_agent = parts_clone
         .headers
         .get(USER_AGENT_HEADER)
@@ -50,15 +46,20 @@ pub async fn log_requests(req: Request<Body>, next: Next) -> Response {
         redact_sensitive_info(&String::from_utf8_lossy(&resp_body_bytes), SENSITIVE_KEYS);
 
     debug!(
-        "Request: {} {} | IP: {:?} | User-Agent: {:?} | Body: {}\nResponse: {} | Body: {}\nTime: {:.2?}",
-        method, uri, client_ip, user_agent.unwrap_or("[Unknown]"), truncate(&req_body, TRUNCATE_LIMIT), parts.status, truncate(&resp_body, TRUNCATE_LIMIT), duration
+        "Request: {} {} | User-Agent: {:?} | Body: {}\nResponse: {} | Body: {}\nTime: {:.2?}",
+        method,
+        uri,
+        user_agent.unwrap_or("[Unknown]"),
+        truncate(&req_body, TRUNCATE_LIMIT),
+        parts.status,
+        truncate(&resp_body, TRUNCATE_LIMIT),
+        duration
     );
 
     info!(
-        "Request {} {} | IP: {:?} | User-Agent: {:?} | Status: {} | Time: {:.2?}",
+        "Request {} {} | User-Agent: {:?} | Status: {} | Time: {:.2?}",
         method,
         uri,
-        client_ip,
         user_agent.unwrap_or("[Unknown]"),
         parts.status,
         duration

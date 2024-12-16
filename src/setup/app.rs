@@ -33,6 +33,9 @@ pub async fn initialize_app() -> Router {
     let protected_routes = Router::new()
         .route("/users", routing::get(routes::users::list))
         .route("/users/:id", routing::get(routes::users::get))
+        .route("/users", routing::post(routes::users::create))
+        //      .route("/users/:id", routing::put(routes::_users::update))
+        //     .route("/users/:id", routing::delete(routes::_users::delete))
         .layer(middleware::from_fn_with_state(
             app_state.clone(),
             authorization,

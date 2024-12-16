@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS role_has_permissions (
+   permission_id INTEGER NOT NULL,
+   role_id INTEGER NOT NULL,
+
+   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER update_updated_at
+BEFORE UPDATE on role_has_permissions
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();

@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+pub mod permissions;
 pub mod repository;
+pub mod roles;
 pub mod users;
+
 #[derive(Deserialize)]
 pub struct ListOptions {
     pub q: Option<String>,
